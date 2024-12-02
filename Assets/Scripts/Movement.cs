@@ -7,6 +7,8 @@ public class Movement : MonoBehaviour
     [SerializeField] private Camera cam;
     [SerializeField] private float camSensitivity;
     [SerializeField] private float thrust;
+    [SerializeField] private float jumpForce;
+    public bool isGrounded;
     private Rigidbody rb;
 
     // Start is called before the first frame update
@@ -18,10 +20,16 @@ public class Movement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(Input.GetButton("Jump") && isGrounded)
+        {
+            rb.AddRelativeForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            isGrounded = false;
+        }
        
     }
     private void FixedUpdate()
     {
+        transform.rotation = Quaternion.LookRotation(cam.transform.forward);
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
@@ -29,14 +37,21 @@ public class Movement : MonoBehaviour
 
         rb.AddRelativeForce(movement, ForceMode.Impulse);
 
-        transform.rotation = Quaternion.LookRotation(cam.transform.forward);
+        
 
         float h = Input.GetAxis("Mouse X");
         float v = Input.GetAxis("Mouse Y");
 
-        cam.transform.Rotate(Vector3.up, h, Space.World);
+        cam.transform.Rotate(Vector3.up, h * camSensitivity, Space.World);
 
-        cam.transform.Rotate(Vector3.right, v, Space.Self);
+        cam.transform.Rotate(Vector3.right, v * camSensitivity, Space.Self);
 
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = true;
+        }
     }
 }
