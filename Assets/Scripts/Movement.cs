@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class Movement : MonoBehaviour
 {
-    [SerializeField] private Camera cam;
+    public CinemachineVirtualCamera cam;
+    public Transform move;
     [SerializeField] private float camSensitivity;
     [SerializeField] private float thrust;
     [SerializeField] private float jumpForce;
@@ -22,29 +24,35 @@ public class Movement : MonoBehaviour
     {
         if(Input.GetButton("Jump") && isGrounded)
         {
-            rb.AddRelativeForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             isGrounded = false;
         }
        
     }
     private void FixedUpdate()
     {
-        transform.rotation = Quaternion.LookRotation(cam.transform.forward);
+        transform.rotation = Quaternion.LookRotation(move.forward);
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
-        Vector3 movement = new Vector3(horizontal, 0, vertical) * thrust;
+        Vector3 movement = new Vector3(0, 0, vertical) * thrust;
 
-        rb.AddRelativeForce(movement, ForceMode.Impulse);
+        //rb.AddRelativeForce(movement, ForceMode.Impulse);
 
-        
+        transform.position = transform.position + Camera.main.transform.forward * vertical * thrust * Time.deltaTime;
+        //rb.AddRelativeForce(transform.position * vertical * thrust, ForceMode.Impulse);
 
         float h = Input.GetAxis("Mouse X");
         float v = Input.GetAxis("Mouse Y");
 
-        cam.transform.Rotate(Vector3.up, h * camSensitivity, Space.World);
+        //cam.transform.Rotate(Vector3.up, h * camSensitivity, Space.World);
 
-        cam.transform.Rotate(Vector3.right, v * camSensitivity, Space.Self);
+       // cam.transform.Rotate(Vector3.right, vertical * camSensitivity, Space.Self);
+
+       // if(Input.GetButtonDown(""))
+        //{
+
+       // }
 
     }
     private void OnCollisionEnter(Collision collision)
