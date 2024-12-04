@@ -8,15 +8,19 @@ public class Movement : MonoBehaviour
     public CinemachineVirtualCamera cam;
     public Transform move;
     [SerializeField] private float camSensitivity;
-    [SerializeField] private float thrust;
+    public float thrust;
     [SerializeField] private float jumpForce;
     public bool isGrounded;
     private Rigidbody rb;
+    private Clock clock;
+    private GameManager gm;
 
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        clock = GetComponent<Clock>();
+        gm = FindAnyObjectByType<GameManager>();
     }
 
     // Update is called once per frame
@@ -60,6 +64,10 @@ public class Movement : MonoBehaviour
         if(collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
+        }
+        if (collision.gameObject.CompareTag("Cookie"))
+        {
+            thrust += 1;
         }
     }
 }
